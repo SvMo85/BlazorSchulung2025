@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Blazorise.Icons.Bootstrap" Version="1.7.7" />
+  </ItemGroup>
+
 </Project>

@@ -17,5 +17,9 @@
         }
 
 
+        public string GetIconName()
+        {
+            return _iconName;
+        }
     }
 }

@@ -2,6 +2,10 @@
 {
     <div>@textList.GetText()</div>
 }
+else if (Item is IconListItem iconItem)
+{
+    <i class="bi @iconItem.GetIconName()" style="font-size: 2rem;"></i>
+}
 
 @code {
 
