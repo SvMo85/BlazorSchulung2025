@@ -1,0 +1,10 @@
+﻿@if (Item is TextListItem textList)
+{
+    <div>@textList.GetText()</div>
+}
+
+@code {
+
+    [Parameter, EditorRequired]
+    public IListItem Item { get; set; }
+}
