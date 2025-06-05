@@ -1,9 +1,9 @@
-namespace BlazorSchulung2025.Components.Helper;
+namespace BlazorSchulung2025;
 
 public class LifecycleLogService
 {
     private readonly Queue<(string Event, DateTime Timestamp, bool LoggedToConsole)> _eventLog = new();
-    
+
     // Event für Benachrichtigung über Änderungen
     public event Action? OnLogUpdated;
 
@@ -20,18 +20,18 @@ public class LifecycleLogService
     {
         if (index < 0 || index >= _eventLog.Count)
             return;
-            
+
         var eventArray = _eventLog.ToArray();
         var oldEvent = eventArray[index];
         eventArray[index] = (oldEvent.Event, oldEvent.Timestamp, true);
-        
+
         // Queue neu erstellen
         _eventLog.Clear();
         foreach (var entry in eventArray)
         {
             _eventLog.Enqueue(entry);
         }
-        
+
         OnLogUpdated?.Invoke();
     }
 

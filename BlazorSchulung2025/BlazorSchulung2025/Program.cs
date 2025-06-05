@@ -1,5 +1,5 @@
+using BlazorSchulung2025;
 using BlazorSchulung2025.Components;
-using BlazorSchulung2025.Components.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
