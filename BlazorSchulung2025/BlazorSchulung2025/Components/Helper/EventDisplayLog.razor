@@ -1,0 +1,65 @@
+
+<div class="lifecycle-log">
+    <h4>Lifecycle Log</h4>
+    <div class="log-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+        @if (_eventLog.Any())
+        {
+            <ul style="list-style-type: none; padding: 0; margin: 0;">
+                @foreach (var (logevent, timestamp, loggedToConsole) in _eventLog.Reverse())
+                {
+                    <li style="padding: 4px 0; border-bottom: 1px solid #eee;">
+                        <span style="@(loggedToConsole ? "color: #007700;" : "")">
+                            [@(timestamp.ToString("HH:mm:ss.fff"))] @logevent @(loggedToConsole ? "✓" : "")
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No lifecycle events logged yet...</p>
+        }
+    </div>
+    <button @onclick="LogLeeren">Log leeren</button>
+</div>
+
+@inject LifecycleLogService LogService
+
+@code {
+    private IEnumerable<(string Event, DateTime Timestamp, bool LoggedToConsole)> _eventLog = Array.Empty<(string, DateTime, bool)>();
+
+    protected override void OnInitialized()
+    {
+        // Bei Änderungen am Log die Komponente aktualisieren
+        LogService.OnLogUpdated += HandleLogUpdated;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Initial die Log-Einträge laden
+            _eventLog = LogService.GetLogEntries();
+            StateHasChanged();
+        }
+    }
+
+    private void HandleLogUpdated()
+    {
+        // Log-Einträge aktualisieren
+        _eventLog = LogService.GetLogEntries().Reverse();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        // Event-Handler entfernen, um Memory Leaks zu vermeiden
+        LogService.OnLogUpdated -= HandleLogUpdated;
+    }
+
+    private void LogLeeren()
+    {
+        LogService.Clear();
+    }
+
+}

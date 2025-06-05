@@ -1,0 +1,60 @@
+@page "/hydration-cycle-example"
+@using BlazorSchulung2025.Components.Helper
+@rendermode InteractiveServer
+
+<h3>HydrationCycleExample</h3>
+<p>Lifecycle Events werden in der Liste unten und im Browser geloggt (F12).</p>
+
+<div class="row">
+    <div class="col-12">
+        <EventDisplayLog></EventDisplayLog>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <HydratedComponent></HydratedComponent>
+    </div>
+</div>
+
+<p>
+    <code>Frage:</code><br/>
+    Wann und wie sollten komplexe Ladevorgänge initialisiert werden? Wir machen das bisher so:
+    <SourceCode Code="@(@"
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await Task.Yield();
+
+        if (!firstRender || _isHydrated)
+            return;
+
+        _isHydrated = true;
+        _filteredSortedData = GetFilteredSortedData();
+
+        StateHasChanged();
+    }")"></SourceCode>
+    <br/>
+    Ist das ausreichend sicher? Ist das Übermäßig kompliziert? Was ist hier best-practice?
+</p>
+
+@code {
+    [Inject]
+    public LifecycleLogService LogService { get; set; }
+    private bool _isHydrated;
+    // Keine Referenzen mehr nötig, da die Kommunikation über den Service erfolgt
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _isHydrated)
+        {
+            LogService.LogEvent("Page-OnAfterRenderAsync--Hydrated");
+            return Task.CompletedTask;
+        }
+
+        LogService.LogEvent("Page-OnAfterRenderAsync--NotHydrated");
+        _isHydrated = true;
+
+        StateHasChanged();
+        return base.OnAfterRenderAsync(firstRender);
+    }
+}

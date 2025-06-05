@@ -1,9 +1,12 @@
 ﻿@foreach (var item in Items)
 {
-
+    <ListItemRenderer Item="item"></ListItemRenderer>
 }
 
 @code {
     [Parameter]
-    public IListItem[] Items { get; set; } = [];
+    public IEnumerable<IListItem> Items { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<IEnumerable<IListItem>> ItemsChanged { get; set; }
 }

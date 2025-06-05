@@ -1,0 +1,68 @@
+﻿@page "/renderfragment"
+
+@using BlazorSchulung2025.Components.List
+@using BlazorSchulung2025.Components.Helper
+
+@rendermode InteractiveServer
+
+<h3>ListExample</h3>
+
+<p>
+    Für Komponten mit mehreren dynamischen Child-Components nutzen wir aktuell eine Liste von Objekten,
+    die die Child-Komponenten repräsentieren. Eine weitere Renderer-Komponente sorgt dafür, dass die Items
+    korrekt dargestellt werden.
+</p>
+
+<strong>List-Komponente:</strong>
+<SourceCode Code="@(@"
+@foreach (var item in Items)
+{
+    <ListItemRenderer Item=""item""></ListItemRenderer>
+}
+
+@code {
+    [Parameter]
+    public IListItem[] Items { get; set; } = [];
+
+}")" />
+
+<strong>List-Item Zuweisung:</strong>
+<SourceCode Code="@(@"
+@code {
+    private IListItem[] _listItems = [
+        new IconListItem(""Settings"", IconNames.Settings),
+        new TextListItem(""Hello List""),
+        new IconListItem(""Calendar"", IconNames.Calendar),
+        new TextListItem(""The End""),
+    ];
+}")" />
+
+<strong>So sieht die Liste aus:</strong>
+<br/>
+<List Items="_listItems"></List>
+
+<br/><br/>
+<p>
+    <code>Frage:</code><br/>
+    Ist es möglich, ein ähnliches Verhalten mit Blazor Renderfragmenten (ggf. auch generischen) zu erreichen?
+    Was ist hier best-practice?<br/>
+    So könnte man Komponenten sauberer erstellen, ohne Code-Behind und Frontent zu vermischen.
+</p>
+
+<strong>Idee</strong>
+<SourceCode Code="@(@"
+<List>
+    <TextListItem text=""Hello List"" />
+    <IconListItem text=""alt text icon"" IconName=""@IconNames.Settings"" />
+    ...
+</List>
+")" />
+
+@code {
+    private IListItem[] _listItems = [
+        new IconListItem("Settings", IconNames.Settings),
+        new TextListItem("Hello List"),
+        new IconListItem("Calendar", IconNames.Calendar),
+        new TextListItem("The End"),
+    ];
+}

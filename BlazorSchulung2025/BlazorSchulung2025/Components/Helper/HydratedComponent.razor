@@ -1,0 +1,85 @@
+@inject IJSRuntime JsRuntime
+@inject LifecycleLogService LogService
+
+@code {
+    private string _componentId = Guid.NewGuid().ToString("N");
+
+    protected override void OnInitialized()
+    {
+        LogLocalOnly("OnInitialized");
+        base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        LogLocalOnly("OnInitializedAsync");
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        LogLocalOnly("OnParametersSet");
+        base.OnParametersSet();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        LogLocalOnly("OnParametersSetAsync");
+        await base.OnParametersSetAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        LogLocalOnly($"OnAfterRender (firstRender: {firstRender})");
+
+        // After first render, we can process any pending console logs
+        if (firstRender)
+        {
+            _ = ProcessPendingConsoleLogs();
+        }
+
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        LogLocalOnly($"OnAfterRenderAsync (firstRender: {firstRender})");
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    // Log event using the centralized service
+    private void LogLocalOnly(string eventName)
+    {
+        // Der Service kümmert sich um das Logging und die Benachrichtigung der EventDisplayLog-Komponente
+        LogService.LogEvent(eventName);
+    }
+
+    // Process all pending console logs when JS is available (after first render)
+    private async Task ProcessPendingConsoleLogs()
+    {
+        try
+        {
+            // Alle Logeinträge abrufen
+            var entries = LogService.GetLogEntries().ToArray();
+            
+            // Nach nicht geloggten Einträgen suchen und in der Konsole ausgeben
+            for (int i = 0; i < entries.Length; i++)
+            {
+                var (eventName, timestamp, loggedToConsole) = entries[i];
+                
+                if (!loggedToConsole)
+                {
+                    await JsRuntime.InvokeVoidAsync("console.log", $"[{_componentId}] Lifecycle: {eventName} at {timestamp:HH:mm:ss.fff}");
+                    
+                    // Als in der Konsole angezeigt markieren
+                    LogService.MarkLoggedToConsole(i);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Bei Fehler einen entsprechenden Eintrag im Log erstellen
+            LogService.LogEvent($"Error processing console logs: {ex.Message}");
+        }
+    }
+}

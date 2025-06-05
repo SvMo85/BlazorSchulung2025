@@ -1,0 +1,54 @@
+﻿@page "/databinding"
+
+@rendermode InteractiveServer
+
+@using BlazorSchulung2025.Components.List
+
+<h3>DataBindingExample</h3>
+
+<p>
+    Wenn wir einer Komponente eine Collection übergeben (ICollection, Array oder List) haben wir das Problem der Neuinizialisierung von Daten.<br/>
+    Genauer: Wenn wir ein Objekt _data an eine Komponente binden und dann irgendwo im Code _data = new ... aufrufen, verlieren wir das Data-Binding.
+</p>
+
+<List @bind-Items="_listItems"></List>
+<br/>
+<button @onclick=@IconlisteNeuErstellen>Neue Liste</button>
+<button @onclick=@IconlisteAltErstellen>Alte Liste</button>
+<br/><br/>
+<p>
+    <code>Frage:</code><br />
+    Hier funktioniert das aber in allen Varianten, die wir versucht haben. Was ist der Unterschied zu dem Code in unserem Live-System?
+</p>
+
+@code {
+    private IEnumerable<IListItem> _listItems = [
+        new IconListItem("Settings", IconNames.Settings),
+        new TextListItem("Hello List"),
+        new IconListItem("Calendar", IconNames.Calendar),
+        new TextListItem("The End"),
+    ];
+
+
+    private void IconlisteNeuErstellen()
+    {
+        List<IListItem> neueListe =
+        [
+            new TextListItem("Neue Liste"),
+            new IconListItem("E-Mail", IconNames.Email),
+        ];
+        _listItems = neueListe;
+    }
+
+    private void IconlisteAltErstellen()
+    {
+        List<IListItem> alteListe = [
+            new IconListItem("Settings", IconNames.Settings),
+            new TextListItem("Hello List"),
+            new IconListItem("Calendar", IconNames.Calendar),
+            new TextListItem("The End"),
+        ];
+        _listItems = alteListe;
+    }
+
+}

@@ -1,10 +1,14 @@
 using BlazorSchulung2025.Components;
+using BlazorSchulung2025.Components.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Registrieren des LifecycleLogService als Singleton
+builder.Services.AddSingleton<LifecycleLogService>();
 
 var app = builder.Build();
 

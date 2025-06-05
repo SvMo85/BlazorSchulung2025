@@ -1,0 +1,22 @@
+﻿.container {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #222;
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    color: lightgray;
+    border: 1px solid gray;
+    border-radius: 0.5rem;
+    position: relative;
+    font-size: 1em;
+}
+
+.code {
+    margin: 0;
+}
+
+.copy {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer
+}
