@@ -3,12 +3,13 @@
 @rendermode InteractiveServer
 
 @using BlazorSchulung2025.Components.List
+@using BlazorSchulung2025.Components.Helper
 
 <h3>DataBindingExample</h3>
 
 <p>
     Wenn wir einer Komponente eine Collection übergeben (ICollection, Array oder List) haben wir das Problem der Neuinizialisierung von Daten.<br/>
-    Genauer: Wenn wir ein Objekt _data an eine Komponente binden und dann irgendwo im Code _data = new ... aufrufen, verlieren wir das Data-Binding.
+    Genauer: Wenn wir ein Objekt _data an eine Komponente binden und dann irgendwo im Code _data = new ... aufrufen, verlieren wir das Data-Binding. Das passiert zuverlässig bei der Verwendung von <code>@("EnumerableDataSource<T>")</code> aus dem QueryKit.
 </p>
 
 <List @bind-Items="_listItems"></List>
@@ -20,6 +21,50 @@
     <code>Frage:</code><br />
     Hier funktioniert das aber in allen Varianten, die wir versucht haben. Was ist der Unterschied zu dem Code in unserem Live-System?
 </p>
+
+<p>
+    <code>Frage:</code><br/>
+    Im der Arbeitszeiterfassung gibt es eine Stelle, bei der ein Details-Dialog angezeigt wird. Diesem Dialog werden Daten via Binding gegeben. Die gebundenen Daten werden in einer Methode gesezt, anschließend wird der Dialog angezeigt.<br/>
+    Die Daten im angezeigten Dialog sind dann nicht die, welche über binding neu gesetzt wurden. Es sind noch die alten Daten. Es sieht so aus, als würden die Daten erst bei Verlassen der Methode, welche den Dialog anzeigt, im Dialog selbst aktualisiert?
+</p>
+<SourceCode Code="@(@"
+<ArbeitstagDetails @ref=""_arbeitstagEditorDialog""
+                   Datum=""@_gewaehltesDatum"" 
+                   IstFestgeschrieben=""_gewaehltesDatumIstFestgeschrieben""
+                   @bind-IstSichtbar=""_zeigeDetailsDialog""
+                   OnAbbrechen=""GibAktuellenTagFrei""
+                   OnSpeichern=""SpeichereEintraegeFuerTag""
+/>
+@code {
+    public void TagDetailsAnzeigen(object obj)
+    {
+        var zusammenfassung = obj as ArbeitstagZusammenfassung;
+        if (zusammenfassung == null)
+            return;
+
+        _gewaehltesDatum = zusammenfassung.Datum;
+        _gewaehltesDatumIstFestgeschrieben = zusammenfassung.IstFestgeschrieben;
+
+        if (!zusammenfassung.IstFestgeschrieben)
+        {
+            var blockeTagErgebnis = LockeArbeitstag(zusammenfassung.Datum);
+            if (!blockeTagErgebnis.IsSuccess)
+            {
+                ToastService.Error(""Fehler"", blockeTagErgebnis.Message);
+                return;
+            }
+        }
+
+        // Für Blazor-Schulung: warum muss ich hier _zeigeDetailsDialog setzen und _gewaehltesDatum oder zusammenfassung.Datum übergeben?
+        // Wenn wir das nicht so machen, wird der Dialog mit veralteten Daten geladen. Er wird quasi gezeigt, bevor
+        // _gewaehltesDatum aktualisiert wird, obwohl das weiter oben im Code passiert.
+        _zeigeDetailsDialog = true;
+        _arbeitstagEditorDialog?.ZeigeDialog(zusammenfassung.Datum);
+
+        StateHasChanged();
+    }
+}"
+)"></SourceCode>
 
 @code {
     private IEnumerable<IListItem> _listItems = [
@@ -50,5 +95,4 @@
         ];
         _listItems = alteListe;
     }
-
 }

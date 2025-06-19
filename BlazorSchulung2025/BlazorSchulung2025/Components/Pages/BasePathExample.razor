@@ -1,0 +1,32 @@
+﻿@page "/BasePath"
+@using BlazorSchulung2025.Components.Helper
+@rendermode InteractiveServer
+
+<h3>BasePathExample</h3>
+
+<p>
+    Um eine BlazorApp auf einem Server in einem Unterverzeichnis laufen zu lassen muss der BasePath der App gesetzt werden.
+    <br/>
+    Das passiert an 2 Stellen, einmal in der <code>Program.cs</code> mit einem Aufruf wie:
+</p>
+<SourceCode Code="@(@"
+if (!string.IsNullOrWhiteSpace(pathBase))
+        app.UsePathBase((PathString) pathBase);
+")"></SourceCode>
+<p>
+    Hier ist zu beachten, dass <code>pathBase</code> nach dem Schema <code>/Unterverzeichnis</code> gesetzt sein muss. Es darf <strong>kein Trailing-Slash</strong> angefügt werden, es <strong>muss</strong> aber ein <strong>Leading-Slash</strong> angefügt werden.
+</p>
+
+Zusätzlich muss in der Hauptanwendungsseite der BasePath mit dem <code>@("<base>")</code> Tag markiert werden, damit relative Pfade entsprechend aufgelöst werden können.
+<SourceCode Code="@(@"
+<base href=""@((PathString) pathBase)/""/>
+")"></SourceCode>
+
+<p>
+    <code>Frage:</code><br />
+    Was ist hier best practice für den BasePath? Soll der BasePath in der <code>Program.cs</code> hart kodiert werden oder sollte er aus einer Konfiguration gelesen werden?
+    Wie geht man idealer Weise mit lokalem Debugging versus Beta-Systemumgebung versus Produktivumgebung um? Hier braucht die Anwendung drei verschiedene Einstellungen für den BasePath. Gibt es wirklich keine Möglichkeit, beim Programmstart den relativen Pfad der Anwendung sauber und zuverlässig auszulesen?
+</p>
+@code {
+
+}
