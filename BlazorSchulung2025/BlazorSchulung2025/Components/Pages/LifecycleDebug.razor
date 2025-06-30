@@ -1,0 +1,89 @@
+@page "/lifecycle-debug"
+
+<h3>Blazor Lifecycle Debug</h3>
+
+<p>
+    <label>
+        <input type="checkbox" @bind="CallStateHasChanged" />
+        <strong>StateHasChanged() ausführen?</strong>
+    </label>
+</p>
+
+<button class="btn btn-primary" @onclick="TriggerUpdate">
+    Trigger Update (@(CallStateHasChanged ? "mit" : "ohne") StateHasChanged)
+</button>
+
+<hr />
+<ul>
+    @foreach (var entry in _log)
+    {
+        <li>@entry</li>
+    }
+</ul>
+
+@code {
+    [Inject] private ILogger<LifecycleDebug> Logger { get; set; } = default!;
+    private List<string> _log = new();
+    private int _counter;
+
+    [Parameter] public string? Message { get; set; }
+
+    public bool CallStateHasChanged { get; set; } = true;
+
+    // SetParametersAsync
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        _log.Add($"SetParametersAsync (async) #{++_counter}");
+        await base.SetParametersAsync(parameters);
+    }
+
+    // OnInitialized
+    protected override void OnInitialized()
+    {
+        Logger.LogDebug("OnInitialized (sync)");
+        _log.Add("OnInitialized (sync)");
+    }
+
+    // OnInitializedAsync
+    protected override async Task OnInitializedAsync()
+    {
+        _log.Add("OnInitializedAsync (async)");
+        await Task.Delay(100);
+    }
+
+    // OnParametersSet
+    protected override void OnParametersSet()
+    {
+        _log.Add("OnParametersSet (sync)");
+    }
+
+    // OnParametersSetAsync
+    protected override async Task OnParametersSetAsync()
+    {
+        _log.Add("OnParametersSetAsync (async)");
+        await Task.Delay(100);
+    }
+
+    // OnAfterRender
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _log.Add($"OnAfterRender (sync) (firstRender: {firstRender})");
+    }
+
+    // OnAfterRenderAsync
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        _log.Add($"OnAfterRenderAsync (async) (firstRender: {firstRender})");
+        await Task.Delay(100);
+    }
+
+    private void TriggerUpdate()
+    {
+        _log.Add($"Triggered ButtonClick (StateHasChanged = {CallStateHasChanged})");
+     
+        if (CallStateHasChanged)
+        {
+            StateHasChanged();
+        }
+    }
+}

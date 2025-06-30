@@ -5,8 +5,8 @@
 
 @code {
     [Parameter]
-    public IEnumerable<IListItem> Items { get; set; } = [];
+    public List<IListItem> Items { get; set; } = [];
 
     [Parameter]
-    public EventCallback<IEnumerable<IListItem>> ItemsChanged { get; set; }
+    public EventCallback<List<IListItem>> ItemsChanged { get; set; }
 }

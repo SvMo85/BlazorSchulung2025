@@ -1,4 +1,6 @@
-﻿namespace BlazorSchulung2025.Components.List
+﻿using Microsoft.AspNetCore.Components;
+
+namespace BlazorSchulung2025.Components.List
 {
     public class IconListItem : IListItem
     {
@@ -14,6 +16,19 @@
         public string GetText()
         {
             return _text;
+        }
+
+        public RenderFragment GetRenderFragment()
+        {
+            return builder =>
+            {
+                builder.OpenElement(0, "span");
+                builder.AddAttribute(1, "class", $"icon {GetIconName()}");
+                builder.CloseElement();
+                builder.OpenElement(2, "span");
+                builder.AddContent(3, GetText());
+                builder.CloseElement();
+            };
         }
 
 

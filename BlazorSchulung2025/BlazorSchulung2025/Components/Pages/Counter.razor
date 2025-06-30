@@ -1,0 +1,76 @@
+@page "/counter/{startCounterAt:int?}"
+@using Microsoft.AspNetCore.Components.Sections
+
+<h3>Counter</h3>
+
+<button @onclick="@IncrementCount"
+        @attributes="AdditionalParameters">Raufzählen
+</button>
+
+<p>@CounterValue</p>
+
+@code {
+    [Parameter] public int StartCounterAt { get; set; } = 0;
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalParameters { get; set; }
+
+     [Inject] ILogger<Counter> Logger { get; set; }
+    // [Inject] PersistentComponentState PersistentComponentState { get; set; }
+    // private PersistingComponentStateSubscription? _persistingSubscription;
+    private string _cacheKey = "CounterCacheKey";
+    public int CounterValue { get; set; }
+    
+    [Inject] IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Logger.LogDebug(">OnParametersSetAsync...");
+        // _persistingSubscription = PersistentComponentState.RegisterOnPersisting(PersistCounter);
+        //
+        // if (PersistentComponentState?.TryTakeFromJson<int>(_cacheKey, out var counterValue) == true)
+        // {
+        //     CountValue = counterValue;
+        // }
+        // else
+        // {
+        //     await Task.Delay(1000);
+            CounterValue = StartCounterAt;
+            Logger.LogDebug("juhu...");
+        // }
+
+        await base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Logger.LogDebug(">OnInitializedAsync...");
+    }
+    
+    // Testing should render logic
+    protected override bool ShouldRender() =>
+        CounterValue > 0 && CounterValue < 10;
+
+    protected override async Task OnAfterRenderAsync(
+        bool firstRender)
+    {
+       // await JSRuntime.InvokeVoidAsync("alert", "juhuuuuuu");
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose() {
+    // _persistingSubscription?.Dispose();
+    }
+
+    // private Task PersistCounter()
+    // {
+    //     PersistentComponentState.PersistAsJson(_cacheKey, CountValue);
+    //     return Task.CompletedTask;
+    // }
+
+    private void IncrementCount()
+    {
+        CounterValue++;
+        StateHasChanged();
+    }
+}

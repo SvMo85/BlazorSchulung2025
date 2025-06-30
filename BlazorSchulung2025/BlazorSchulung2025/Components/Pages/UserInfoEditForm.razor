@@ -1,0 +1,78 @@
+@page "/userinfo-editform"
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@using BlazorSchulung2025.Models
+@using Blazored.FluentValidation
+<h3>UserInfoEditForm</h3>
+
+<p>
+    Status: @StatusInformation
+</p>
+<EditForm EditContext="@EditContext"
+          OnInvalidSubmit="InvalidSubmitHandler"
+          OnValidSubmit="ValidSubmitHandler">
+    <FluentValidationValidator />
+    <ValidationSummary/>
+
+    <table>
+        <tr>
+            <td>
+                <label>@(GetDisplayName<UserInfo>("UserName"))</label>
+            </td>
+            <td>
+                <InputText @bind-Value="_userInfo.UserName"></InputText>
+            </td>
+        </tr>
+    </table>
+
+    <InputText @bind-Value="_userInfo.Email"></InputText>
+    <InputText @bind-Value="_userInfo.FirstName"></InputText>
+    <InputText @bind-Value="_userInfo.LastName"></InputText>
+    <InputDate @bind-Value="_userInfo.Birthday"></InputDate>
+
+    <input type="submit" class="btn btn-primary" value="Abschicken"/>
+</EditForm>
+
+
+@code {
+    private string StatusInformation = "Formular noch nicht abgeschickt";
+
+    private UserInfo _userInfo;
+
+    public EditContext? EditContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _userInfo = new UserInfo
+        {
+            UserName = "MaxMustermann",
+            Email = "init..."
+        };
+
+        EditContext = new EditContext(_userInfo);
+        await base.OnInitializedAsync();
+    }
+
+    public static string GetDisplayName<T>(
+        string propertyName)
+    {
+        var prop = typeof(T).GetProperty(propertyName);
+        var displayAttr = prop?.GetCustomAttribute<DisplayAttribute>();
+        return displayAttr?.Name ?? propertyName;
+    }
+
+    private async Task ValidSubmitHandler(
+        EditContext arg)
+    {
+        await Task.Yield();
+        StatusInformation = "Daten werden zur Datenbank geschickt...";
+    }
+
+    private async Task InvalidSubmitHandler(
+        EditContext arg)
+    {
+        await Task.Yield();
+        StatusInformation = "Formulardaten sind nicht richtig ausgefüllt...";
+    }
+
+}

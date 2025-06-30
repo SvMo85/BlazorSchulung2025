@@ -1,0 +1,17 @@
+@typeparam TItem
+
+<p>@HeaderContent</p>
+
+<p>
+    @foreach (var item in Items)
+    {
+        @ListItemTemplate(item)
+    }
+</p>
+
+@code {
+    [Parameter] public RenderFragment HeaderContent { get; set; } = default;
+    [Parameter] public RenderFragment<TItem> ListItemTemplate { get; set; } = default!;
+
+    [Parameter] public List<TItem> Items { get; set; } = new List<TItem>();
+}

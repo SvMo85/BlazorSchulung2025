@@ -1,0 +1,11 @@
+<h1> Render Message </h1>
+<p> @Message?.ToUpper() </p>
+
+
+@code {
+    [Parameter]
+    public string? Message {
+        get;
+        set;
+    }
+}

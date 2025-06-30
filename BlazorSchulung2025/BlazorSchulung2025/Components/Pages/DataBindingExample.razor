@@ -12,8 +12,13 @@
     Genauer: Wenn wir ein Objekt _data an eine Komponente binden und dann irgendwo im Code _data = new ... aufrufen, verlieren wir das Data-Binding. Das passiert zuverlässig bei der Verwendung von <code>@("EnumerableDataSource<T>")</code> aus dem QueryKit.
 </p>
 
-<List @bind-Items="_listItems"></List>
+<p>Hier _listItems2:</p>
+<List @bind-Items="_listItems2"></List>
 <br/>
+<p>Hier _listItems:</p>
+<List @bind-Items="_listItems"></List>
+
+<button @onclick=@IconlisteErweitern>Element hinzufügen</button>
 <button @onclick=@IconlisteNeuErstellen>Neue Liste</button>
 <button @onclick=@IconlisteAltErstellen>Alte Liste</button>
 <br/><br/>
@@ -67,13 +72,20 @@
 )"></SourceCode>
 
 @code {
-    private IEnumerable<IListItem> _listItems = [
+    private List<IListItem> _listItems = [
         new IconListItem("Settings", IconNames.Settings),
         new TextListItem("Hello List"),
         new IconListItem("Calendar", IconNames.Calendar),
         new TextListItem("The End"),
     ];
 
+    private List<IListItem> _listItems2;
+
+    protected override void OnInitialized()
+    {
+        _listItems2 = _listItems;
+        base.OnInitialized();
+    }
 
     private void IconlisteNeuErstellen()
     {
@@ -85,6 +97,11 @@
         _listItems = neueListe;
     }
 
+    private void IconlisteErweitern()
+    {
+        _listItems.Add(new IconListItem($"New Item + {DateTime.Now}", IconNames.Calendar));
+    }
+    
     private void IconlisteAltErstellen()
     {
         List<IListItem> alteListe = [

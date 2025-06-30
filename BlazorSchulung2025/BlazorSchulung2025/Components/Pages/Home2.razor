@@ -1,0 +1,36 @@
+@* @page "/2/{someInt:int}/{someGuid:guid?}" *@
+
+@page "/2/{someInt:int:range(1,100)}"
+@page "/2/einstring"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Home2</PageTitle>
+
+<p>
+    Home2...
+    @WoherSindWirGekommen 
+</p>
+
+<p>
+    <Counter @rendermode="InteractiveAuto" StartCounterAt="@SomeInt"
+        hier="noch ein attribut" hier2="noch ein attribut2" style="color: red"
+             ></Counter>
+</p>
+<p>
+    <Counter @rendermode="InteractiveServer" StartCounterAt="@(SomeInt*10)"></Counter>
+</p>
+
+@code {
+    [Parameter] public int SomeInt { get; set; } 
+    [Parameter] public Guid SomeGuid { get; set; } 
+    [Inject] public NavigationManager NavigationManager { get; set; }
+    string WoherSindWirGekommen { get; set; }
+
+    protected override void OnInitialized()
+    {
+        
+        WoherSindWirGekommen = NavigationManager.Uri;
+        base.OnInitialized();
+    }
+
+}

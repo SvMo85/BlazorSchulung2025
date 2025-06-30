@@ -1,0 +1,31 @@
+﻿@page "/listwithrenderfragments"
+
+@attribute [Authorize]
+
+@using BlazorSchulung2025.Components.List
+@using Microsoft.AspNetCore.Authorization
+
+@rendermode InteractiveServer
+
+<h3>ListExample</h3>
+
+<TemplatedList Items="_items" Context="item">
+    <HeaderContent>
+        <h4>Unser List Header</h4>
+    </HeaderContent>
+    <ListItemTemplate>
+        @item.GetRenderFragment()
+    </ListItemTemplate>
+</TemplatedList>
+
+@code {
+
+    private List<IListItem> _items = new List<IListItem>
+    {
+        new IconListItem("Settings", IconNames.Settings),
+        new TextListItem("Hello List"),
+        new IconListItem("Calendar", IconNames.Calendar),
+        new TextListItem("The End"),
+    };
+
+}

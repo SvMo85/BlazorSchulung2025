@@ -54,7 +54,6 @@
         LogService.LogEvent("Page-OnAfterRenderAsync--NotHydrated");
         _isHydrated = true;
 
-        StateHasChanged();
         return base.OnAfterRenderAsync(firstRender);
     }
 }
